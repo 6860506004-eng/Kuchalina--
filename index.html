@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>Nina's Tree & Flower System</title>
+    <style>
+        :root { --primary: #ff4081; --secondary: #f50057; --bg: #fff5f8; }
+        body { font-family: 'Kanit', sans-serif; background: var(--bg); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .container { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 90%; max-width: 1000px; margin-bottom: 30px; }
+        h1, h2 { color: var(--primary); text-align: center; }
+        
+        /* BST Styles */
+        #canvas { background: #fafafa; border: 2px dashed #ffc1e3; border-radius: 10px; display: block; margin: 20px auto; }
+        .controls { text-align: center; margin-bottom: 20px; }
+        input { padding: 10px; border: 2px solid #ffc1e3; border-radius: 5px; width: 60px; }
+        button { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; background: var(--primary); color: white; font-weight: bold; transition: 0.3s; }
+        button:hover { background: var(--secondary); }
+
+        /* Table Styles */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { background: var(--primary); color: white; padding: 15px; text-align: center; }
+        td { border-bottom: 1px solid #ffe4f1; padding: 15px; text-align: center; }
+        tr:hover { background: #fff0f6; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🌲 Binary Search Tree Visualizer</h1>
+        <div class="controls">
+            <input type="number" id="nodeValue" placeholder="เลข">
+            <button onclick="insertNode()">เพิ่มโหนด</button>
+            <button onclick="resetTree()" style="background:#777;">ล้างต้นไม้</button>
+        </div>
+        <canvas id="canvas" width="800" height="400"></canvas>
+    </div>
+
+    <div class="container">
+        <h2>🌹 รายการกุหลาบในฐานข้อมูล (MariaDB)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>สายพันธุ์</th>
+                    <th>สี</th>
+                    <th>กลิ่น</th>
+                    <th>ราคา</th>
+                    <th>แหล่งกำเนิด</th>
+                    <th>ฤดูกาล</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for f in flowers %}
+                <tr>
+                    <td><strong>{{ f.variety_name }}</strong></td>
+                    <td>{{ f.color }}</td>
+                    <td>{{ f.fragrance }}</td>
+                    <td style="color:var(--secondary); font-weight:bold;">{{ f.price }} ฿</td>
+                    <td>{{ f.origin }}</td> <td>{{ f.blooming_season }}</td> </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // โค้ด JavaScript สำหรับวาดต้นไม้ (BST Logic)
+        let tree = null;
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        class Node {
+            constructor(val) {
+                this.val = val;
+                this.left = null;
+                this.right = null;
+            }
+        }
+
+        function insertNode() {
+            const val = parseInt(document.getElementById('nodeValue').value);
+            if (isNaN(val)) return;
+            tree = addNode(tree, val);
+            drawTree();
+            document.getElementById('nodeValue').value = '';
+        }
+
+        function addNode(node, val) {
+            if (!node) return new Node(val);
+            if (val < node.val) node.left = addNode(node.left, val);
+            else if (val > node.val) node.right = addNode(node.right, val);
+            return node;
+        }
+
+        function drawTree() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (tree) drawNode(tree, canvas.width / 2, 40, 150);
+        }
+
+        function drawNode(node, x, y, offset) {
+            if (node.left) {
+                ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - offset, y + 60); ctx.stroke();
+                drawNode(node.left, x - offset, y + 60, offset / 1.8);
+            }
+            if (node.right) {
+                ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + offset, y + 60); ctx.stroke();
+                drawNode(node.right, x + offset, y + 60, offset / 1.8);
+            }
+            ctx.beginPath();
+            ctx.arc(x, y, 20, 0, 2 * Math.PI);
+            ctx.fillStyle = "#ff4081"; ctx.fill();
+            ctx.fillStyle = "white"; ctx.textAlign = "center";
+            ctx.fillText(node.val, x, y + 5);
+        }
+
+        function resetTree() { tree = null; drawTree(); }
+    </script>
+</body>
+</html>
