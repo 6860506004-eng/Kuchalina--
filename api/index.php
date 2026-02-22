@@ -1,11 +1,11 @@
 <?php
 
-$servername = "202.29.70.18:3000";
+$servername = "202.29.70.18";
 $username = "Nina6860506004";
 $password = "1859900347014";
 $dbname = "Nina";
 
-$port = 3306;
+$port = 6804;
 
 $conn = new mysqli($servername, $username, $password, $dbname, $port);
 
